@@ -1,0 +1,5 @@
+# PC avec GPU NVIDIA (PyTorch CUDA 13.4)
+# Si le pilote est trop ancien pour CUDA 13.4, remplacer cu134 par cu132 ci-dessous.
+-r requirements.txt
+--extra-index-url https://download.pytorch.org/whl/cu134
+torch==2.15.0

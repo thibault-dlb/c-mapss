@@ -55,7 +55,11 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 - Venv : `.venv` à la racine du projet (ignoré par Git).
 - Versions : numpy 2.5.4, pandas 3.1.1, scikit-learn 1.9.1, matplotlib 3.11.2, torch 2.15.0 (build CPU). Listées dans `requirements.txt`.
 - Vérifié : les 5 bibliothèques s'importent, `torch.cuda.is_available()` vaut `False` (CPU seul, comme prévu), 4 threads CPU.
-- Activer : `.\.venv\Scripts\Activate.ps1`. Réinstaller depuis zéro : `python -m venv .venv` puis `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`.
+- Activer : `.\.venv\Scripts\Activate.ps1`.
+- **Deux machines prévues** : celle-ci (CPU) et un autre PC avec CUDA, où l'entraînement final sera probablement fait. Fichiers : `requirements.txt` (commun, sans PyTorch), `requirements-cpu.txt`, `requirements-cuda.txt`. Voir le `README.md` pour les commandes.
+- Index PyTorch vérifiés sur `download.pytorch.org` pour torch 2.15.0, Windows, Python 3.12 : `cpu`, `cu132` et `cu134` existent. `cu134` est choisi par défaut ; `cu132` est la solution de repli pour un pilote plus ancien. Quelle version CUDA accepte le pilote du PC cible : **inconnu**, à lire avec `nvidia-smi`.
+- **Non testé** : l'installation CUDA n'a pas pu être essayée (pas de GPU ici, et le test aurait téléchargé plusieurs Go). Elle repose sur la règle de version de pip (`2.15.0+cu134` passe devant `2.15.0`), qui a fonctionné pour la variante CPU ici. À valider sur le PC CUDA avec `scripts/check_gpu.py`.
+- Convention de code : choisir le périphérique avec `"cuda" if torch.cuda.is_available() else "cpu"`.
 
 ## Décisions prises
 

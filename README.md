@@ -23,10 +23,22 @@ Projet étudiant : entraîner un modèle d'IA pour la **maintenance prédictive*
 
 ## Installation
 
+Il y a deux fichiers selon la machine (PyTorch ne s'installe pas de la même façon avec ou sans GPU NVIDIA) :
+
+| Machine | Fichier |
+|---|---|
+| Sans GPU NVIDIA (CPU) | `requirements-cpu.txt` |
+| Avec GPU NVIDIA (CUDA) | `requirements-cuda.txt` |
+
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-cpu.txt    # ou requirements-cuda.txt
+.\.venv\Scripts\python.exe scripts\check_gpu.py                      # vérifie torch et le GPU
 ```
+
+`requirements-cuda.txt` vise CUDA 13.4 (`cu134`). Si `nvidia-smi` indique une version CUDA plus ancienne que 13.4 en haut à droite, remplacer `cu134` par `cu132` dans ce fichier. `requirements.txt` seul contient les bibliothèques communes, sans PyTorch.
+
+Les scripts devront choisir le périphérique avec `"cuda" if torch.cuda.is_available() else "cpu"`.
 
 ## Source
 

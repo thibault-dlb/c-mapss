@@ -19,6 +19,8 @@ Chronologie de la session (2026-11-09).
 
 13. **Environnement** : création de `.venv`, installation de numpy, pandas, scikit-learn, matplotlib et torch (CPU), vérification des imports, écriture de `requirements.txt` et `.gitignore`.
 
+14. **Deux machines** (CPU ici, CUDA pour l'entraînement) : `requirements.txt` allégé (sans PyTorch), ajout de `requirements-cpu.txt`, `requirements-cuda.txt` (cu134) et `scripts/check_gpu.py`. Index `cpu`, `cu132`, `cu134` vérifiés pour torch 2.15.0. Variante CUDA non testée faute de GPU.
+
 ## À faire ensuite
 
 Voir `plan.md` : choisir FD001 d'abord ou tous les jeux, notebook ou scripts, puis configurer l'environnement et explorer les données.
