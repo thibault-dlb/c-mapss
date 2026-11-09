@@ -17,6 +17,8 @@ Chronologie de la session (2026-11-09).
 
 12. **QCM n°2** : multitâche avec étiquette proxy pour le mode de panne, validation croisée 5 plis par moteur, padding par la première valeur pour les fenêtres courtes, pas d'installation de l'environnement pour l'instant. Documentation commitée et poussée (`299e99a`).
 
+13. **Environnement** : création de `.venv`, installation de numpy, pandas, scikit-learn, matplotlib et torch (CPU), vérification des imports, écriture de `requirements.txt` et `.gitignore`.
+
 ## À faire ensuite
 
 Voir `plan.md` : choisir FD001 d'abord ou tous les jeux, notebook ou scripts, puis configurer l'environnement et explorer les données.

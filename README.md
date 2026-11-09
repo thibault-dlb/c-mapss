@@ -19,7 +19,14 @@ Projet étudiant : entraîner un modèle d'IA pour la **maintenance prédictive*
 - Données téléchargées et extraites.
 - Analyse documentaire terminée (pages NASA, article, statistiques).
 - Aucun code de modélisation écrit pour l'instant.
-- L'environnement Python n'est pas configuré (voir `docs/plan.md`).
+- Environnement Python configuré (`.venv`, voir `requirements.txt` et `docs/plan.md`).
+
+## Installation
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
 
 ## Source
 

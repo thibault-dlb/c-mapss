@@ -48,7 +48,14 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 - Mode de panne : **apprentissage multitâche avec étiquette proxy**. Une tête de classification (« HPC seul » contre « deux modes », étiquette tirée du jeu) en plus de la tête RUL ; au test, le modèle la prédit seul.
 - Validation : **validation croisée 5 plis**, découpage par moteur (GroupKFold), identifiants de moteur uniques entre jeux.
 - Fenêtres plus courtes que 30 cycles (certains moteurs de test n'en ont que 19 à 38) : **compléter avec la première valeur** (padding par répétition du premier cycle).
-- Environnement : **pas d'installation pour l'instant** (venv, bibliothèques et PyTorch restent à faire).
+- Environnement : installé ensuite à la demande de l'utilisateur (voir plus bas).
+
+## Environnement Python (installé)
+
+- Venv : `.venv` à la racine du projet (ignoré par Git).
+- Versions : numpy 2.5.4, pandas 3.1.1, scikit-learn 1.9.1, matplotlib 3.11.2, torch 2.15.0 (build CPU). Listées dans `requirements.txt`.
+- Vérifié : les 5 bibliothèques s'importent, `torch.cuda.is_available()` vaut `False` (CPU seul, comme prévu), 4 threads CPU.
+- Activer : `.\.venv\Scripts\Activate.ps1`. Réinstaller depuis zéro : `python -m venv .venv` puis `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`.
 
 ## Décisions prises
 
