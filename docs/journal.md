@@ -15,6 +15,8 @@ Chronologie de la session (2026-11-09).
 10. **Choix** : scripts Python (pas de notebook). Architecture recommandée : baseline arbres + CNN 1D / GRU.
 11. **QCM** : plafond de RUL à tester, normalisation par condition, le modèle doit deviner le mode de panne (pas d'identifiant de jeu), commit et push automatiques à chaque étape.
 
+12. **QCM n°2** : multitâche avec étiquette proxy pour le mode de panne, validation croisée 5 plis par moteur, padding par la première valeur pour les fenêtres courtes, pas d'installation de l'environnement pour l'instant. Documentation commitée et poussée (`299e99a`).
+
 ## À faire ensuite
 
 Voir `plan.md` : choisir FD001 d'abord ou tous les jeux, notebook ou scripts, puis configurer l'environnement et explorer les données.

@@ -43,6 +43,13 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 - Git : **commit et push automatiques à chaque étape terminée** (branche `main`).
 - Sous-ensemble : pas d'identifiant en entrée (voir plus haut).
 
+## Décisions du QCM n°2 (2026-11-09)
+
+- Mode de panne : **apprentissage multitâche avec étiquette proxy**. Une tête de classification (« HPC seul » contre « deux modes », étiquette tirée du jeu) en plus de la tête RUL ; au test, le modèle la prédit seul.
+- Validation : **validation croisée 5 plis**, découpage par moteur (GroupKFold), identifiants de moteur uniques entre jeux.
+- Fenêtres plus courtes que 30 cycles (certains moteurs de test n'en ont que 19 à 38) : **compléter avec la première valeur** (padding par répétition du premier cycle).
+- Environnement : **pas d'installation pour l'instant** (venv, bibliothèques et PyTorch restent à faire).
+
 ## Décisions prises
 
 - **Entraînement sur les 4 sous-ensembles (FD001 à FD004) ensemble**, avec les **conditions de vol (3 réglages opérationnels) en entrée du modèle** (décision de l'utilisateur, 2026-11-09). Constat sur les fichiers : FD001 et FD003 ont une seule condition (réglages quasi constants autour de 0 / 0 / 100) ; FD002 et FD004 ont exactement 6 conditions discrètes (altitude, Mach, TRA) : (0, 0, 100), (10, 0,25, 100), (20, 0,70, 100), (25, 0,62, 60), (35, 0,84, 100), (42, 0,84, 100). L'ordre altitude / Mach / TRA des colonnes 3 à 5 est déduit des plages de l'article, pas écrit explicitement dans le `readme.txt`.
