@@ -2,6 +2,66 @@
 
 Projet étudiant : entraîner un modèle d'IA pour la **maintenance prédictive** (prédiction de la durée de vie restante, RUL) sur le jeu de données NASA C-MAPSS.
 
+## Objectif du projet
+
+### Problème posé
+
+Pour un moteur d'avion (turbofan) en service, on dispose de mesures de capteurs enregistrées à chaque cycle (un vol). L'objectif est de **prédire combien de cycles il reste avant la panne** : c'est la RUL (*Remaining Useful Life*, durée de vie utile restante). Une bonne prédiction permet de planifier la maintenance avant la panne, sans retirer un moteur trop tôt ni trop tard.
+
+### Ce que le modèle doit faire
+
+- **Entrées :** l'historique récent d'un moteur (une fenêtre d'environ 30 cycles), avec pour chaque cycle les **capteurs utiles** et les **3 réglages opérationnels (conditions de vol)**.
+- **Sortie principale :** la RUL du moteur au dernier cycle observé.
+- **Sortie secondaire :** le régime de panne probable, pour que le modèle **devine lui-même le mode de panne** au moment du test, sans qu'on le lui indique.
+
+### Données utilisées
+
+**Les quatre sous-ensembles FD001 à FD004 sont utilisés ensemble** pour l'entraînement, soit environ 160 000 lignes et 549 moteurs.
+
+| Jeu | Conditions de vol | Modes de panne |
+|---|---|---|
+| FD001 | 1 | 1 (HPC) |
+| FD002 | 6 | 1 (HPC) |
+| FD003 | 1 | 2 (HPC et fan) |
+| FD004 | 6 | 2 (HPC et fan) |
+
+Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapter seul aux conditions de vol et au mode de panne.
+
+### Choix de conception arrêtés
+
+| Sujet | Choix |
+|---|---|
+| Normalisation des capteurs | Par condition de vol |
+| Plafond de RUL à l'entraînement | À tester (par exemple 100, 125, 150), garder la meilleure valeur sur la validation |
+| Fenêtres plus courtes que 30 cycles | Complétées en répétant le premier cycle |
+| Mode de panne | Apprentissage multitâche : une tête RUL et une tête de classification avec étiquette proxy |
+| Validation | Validation croisée à 5 plis, découpage par moteur (jamais par ligne) |
+| Code | Scripts Python, pas de notebook |
+| Matériel | Mise au point sur CPU, entraînement probablement sur un PC avec GPU CUDA |
+
+### Architecture envisagée (recommandation, pas encore validée)
+
+1. **Baseline :** Random Forest ou Gradient Boosting sur des statistiques calculées sur la fenêtre, plus les conditions de vol. Elle sert de point de comparaison.
+2. **Modèle principal :** un petit réseau CNN 1D suivi d'un GRU (ou LSTM), avec une tête RUL et une tête de classification du régime de panne.
+
+### Évaluation
+
+- Chaque sous-ensemble est évalué **séparément** sur son propre jeu de test, avec les vraies RUL des fichiers `RUL_FD00x.txt`.
+- Deux métriques : le **RMSE** et la **score function asymétrique de PHM08** (les prédictions tardives sont plus pénalisées que les précoces).
+- Comme chaque test ne donne qu'une prédiction par moteur (100 pour FD001), le score est bruité : il sera complété par la validation croisée et par plusieurs entraînements avec des graines différentes.
+
+### Livrables prévus
+
+- Des scripts reproductibles (préparation des données, entraînement, évaluation).
+- Les résultats chiffrés par jeu et des figures (prédiction contre RUL réelle).
+- Cette documentation (`docs/`), qui sert de base au rapport.
+
+### Limites à garder en tête
+
+- Les données sont **synthétiques** (simulateur) : un bon score ici ne garantit pas les mêmes performances sur de vrais moteurs.
+- Les fichiers ne donnent le mode de panne que **par jeu**, pas par moteur. La classification du régime est donc un proxy grossier (« HPC seul » contre « deux modes possibles »), pas un diagnostic exact.
+- Il y a peu de moteurs indépendants (100 à 260 par jeu) : il faut un modèle de taille modeste et une validation par moteur pour éviter une évaluation trop optimiste.
+
 ## Contenu du dépôt
 
 | Chemin | Description |
