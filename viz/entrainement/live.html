@@ -3,8 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Entraînement en direct – C-MAPSS</title>
+<title>Recherche de la meilleure IA – C-MAPSS</title>
+<link rel="stylesheet" href="../lib/fonts/fonts.css">
 <link rel="stylesheet" href="../lib/style.css">
+<style>
+  :root { --bg: #1C110B; --panel: #2A1B12; --fg: #F1E6CF; --muted: #B0A08A; --accent: #E3B23C; --border: #4A3425; }
+  html, body { background: #1C110B; font-family: Inter, system-ui, sans-serif; }
+  #controls { background: #2A1B12; border-top: 1px solid #4A3425; color: #B0A08A; font-family: Inter, system-ui, sans-serif; }
+  #controls button { background: #38251A; border-color: #4A3425; }
+  #controls button:hover { background: #4A3425; }
+  #rec { color: #E5604D; }
+  #stage svg { display: block; }
+</style>
 </head>
 <body>
 <div id="stage"></div>

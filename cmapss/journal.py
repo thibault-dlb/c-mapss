@@ -19,6 +19,24 @@ def _git_hash():
         return None
 
 
+def publish_latest(directory, journal_path, name="latest.json"):
+    """Écrit un pointeur `name` (par défaut `latest.json`) vers le journal à suivre en direct, de façon atomique.
+
+    Utilisé quand plusieurs entraînements écrivent chacun leur journal : chaque worker écrit son pointeur `slotK.json`.
+    """
+    import os
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    tmp = directory / (name + ".tmp")
+    tmp.write_text(json.dumps({"journal": f"{directory.name}/{Path(journal_path).name}", "published_at": time.time()}), encoding="utf-8")
+    for _ in range(20):                       # sous Windows, remplacer un fichier en cours de lecture peut échouer un instant
+        try:
+            os.replace(tmp, directory / name)
+            return
+        except PermissionError:
+            time.sleep(0.05)
+
+
 class Journal:
     def __init__(self, path):
         self.path = Path(path)

@@ -40,6 +40,7 @@ class TrainConfig:
     channels: tuple = (32, 64)
     hidden: int = 64
     kernel: int = 5
+    log_kernels: bool = True     # écrire les noyaux de la convolution 1 à chaque époque (lourd : désactivé pour les journaux en direct)
 
     def to_dict(self):
         d = asdict(self)
@@ -195,7 +196,7 @@ def train_run(data, cfg, journal=None, device="cpu", fixed_epochs=None, model_cf
         if probe is None:
             return
         layers, kernels = layer_stats(model, probe["X_act"], device)
-        log("layers", epoch=epoch, layers=layers, kernels=kernels)
+        log("layers", epoch=epoch, layers=layers, **({"kernels": kernels} if cfg.log_kernels else {}))
         p, _ = predict(model, probe["X"], device, cap=cfg.cap)
         log("prediction", epoch=epoch, pred=np.round(p, 1).tolist())
 

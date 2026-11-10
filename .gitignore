@@ -4,3 +4,5 @@ __pycache__/
 data/processed/
 reports/videos/
 .pytest_cache/
+viz/entrainement/runs/
+viz/entrainement/demo/

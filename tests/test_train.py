@@ -132,3 +132,25 @@ def test_entrainement_avec_dropout_et_journal_enregistre_le_reglage(tmp_path):
     train_run(_run_data(), cfg, journal=Journal(p))
     meta = json.loads(p.read_text(encoding="utf-8").splitlines()[1])
     assert meta["config"]["preset"] == "dropout" and meta["config"]["dropout"] == 0.3 and meta["model"]["dropout"] == 0.3
+
+
+def test_publish_latest_ecrit_le_pointeur_du_dernier_journal(tmp_path):
+    from cmapss.journal import publish_latest
+    d = tmp_path / "runs"
+    publish_latest(d, d / "a.jsonl")
+    assert json.loads((d / "latest.json").read_text(encoding="utf-8"))["journal"] == "runs/a.jsonl"
+    publish_latest(d, d / "b.jsonl")                           # un nouvel entraînement remplace le pointeur
+    assert json.loads((d / "latest.json").read_text(encoding="utf-8"))["journal"] == "runs/b.jsonl"
+    publish_latest(d, d / "c.jsonl", name="slot2.json")        # un pointeur par worker
+    assert json.loads((d / "slot2.json").read_text(encoding="utf-8"))["journal"] == "runs/c.jsonl"
+    assert not list(d.glob("*.tmp"))
+
+
+def test_les_noyaux_ne_sont_ecrits_que_si_demande(tmp_path):
+    from cmapss.train import preset_config
+    for flag in (True, False):
+        p = tmp_path / f"j{flag}.jsonl"
+        cfg = preset_config("aucune", max_epochs=1, patience=1, batch_size=64, seed=0, log_kernels=flag)
+        train_run(_run_data(), cfg, journal=Journal(p))
+        layers = [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if '"type":"layers"' in l]
+        assert all(("kernels" in e) == flag for e in layers)
