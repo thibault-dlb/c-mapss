@@ -77,7 +77,7 @@
     const col = st.ended ? C.green : C.amber;
     gTitle.append("circle").attr("cx", 1470).attr("cy", 66).attr("r", 11).attr("fill", col);
     txt(gTitle, 1495, 78, status, { size: 36, bold: true, fill: col });
-    if (m) txt(gTitle, 1860, 126, `${m.device} · ${m.threads} threads · graine ${m.config.seed} · ${fmtT(st.t)}`, { size: 24, fill: C.muted, anchor: "end" });
+    if (m) txt(gTitle, 1860, 126, `${m.device} · ${m.threads} threads · graine ${m.config.seed} · réglage ${m.config.preset || "défaut"} · ${fmtT(st.t)}`, { size: 24, fill: C.muted, anchor: "end" });
     if (st.batches.length && !st.ended) {                                  // avancement dans l'époque, lu dans les événements « batch »
       const b = st.batches[st.batches.length - 1], inEpoch = b.epoch === ep + 1;
       if (inEpoch) {

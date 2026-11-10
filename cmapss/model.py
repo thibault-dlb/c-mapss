@@ -21,6 +21,7 @@ class ModelConfig:
     kernel: int = 5
     hidden: int = 64
     window: int = WINDOW
+    dropout: float = 0.0      # probabilité d'éteindre un neurone pendant l'entraînement (0 = aucun)
 
     def to_dict(self):
         d = asdict(self)
@@ -34,8 +35,12 @@ class CnnGru(nn.Module):
         cfg = cfg or ModelConfig()
         self.cfg = cfg
         c1, c2 = cfg.channels
-        self.conv1 = nn.Sequential(nn.Conv1d(cfg.n_features, c1, cfg.kernel, padding="same"), nn.BatchNorm1d(c1), nn.ReLU())
-        self.conv2 = nn.Sequential(nn.Conv1d(c1, c2, cfg.kernel, padding="same"), nn.BatchNorm1d(c2), nn.ReLU())
+        # Le dropout, sans paramètre, suit chaque bloc de convolution et précède les têtes ; à 0 il ne fait rien.
+        self.conv1 = nn.Sequential(nn.Conv1d(cfg.n_features, c1, cfg.kernel, padding="same"), nn.BatchNorm1d(c1), nn.ReLU(),
+                                   nn.Dropout(cfg.dropout))
+        self.conv2 = nn.Sequential(nn.Conv1d(c1, c2, cfg.kernel, padding="same"), nn.BatchNorm1d(c2), nn.ReLU(),
+                                   nn.Dropout(cfg.dropout))
+        self.drop_head = nn.Dropout(cfg.dropout)
         self.gru = nn.GRU(c2, cfg.hidden, batch_first=True)
         self.head_rul = nn.Linear(cfg.hidden, 1)
         self.head_regime = nn.Linear(cfg.hidden, 1)
@@ -44,7 +49,7 @@ class CnnGru(nn.Module):
         a1 = self.conv1(x.transpose(1, 2))             # (lot, c1, T)
         a2 = self.conv2(a1)                             # (lot, c2, T)
         _, h = self.gru(a2.transpose(1, 2))             # h : (1, lot, hidden)
-        h = h[-1]
+        h = self.drop_head(h[-1])
         rul, logit = self.head_rul(h).squeeze(-1), self.head_regime(h).squeeze(-1)
         if return_acts:
             return rul, logit, {"conv1": a1, "conv2": a2, "gru": h}

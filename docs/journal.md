@@ -45,6 +45,8 @@ Chronologie de la session (2026-11-09).
 
 30. **Essai de 12 époques** (avec l'accord de l'utilisateur, après suppression du journal partiel) : le réseau **surapprend dès l'époque 3** (RMSE de validation 24,46 au mieux, contre 23,94 pour la baseline sur le pli 0, puis remontée à 29,1). Vidéo d'essai rendue depuis ce journal. Deux défauts de la vidéo repérés sur les captures et corrigés : cases de sortie qui débordaient, et une légende (« son erreur baisse ») fausse pour ce journal ; les légendes des scènes 2 à 4 sont maintenant choisies d'après les valeurs du journal.
 
+31. **Recherche d'hyperparamètres** (2026-11-10), sur demande de l'utilisateur : « tester plein de combinaisons, même si c'est très long, CUDA seulement si je l'estime ». `cmapss/search.py` (espace de 9 paramètres, tirage reproductible, classement pli par pli), dropout, bruit sur les entrées, AdamW, tailles et noyau dans `model.py` et `train.py`, `scripts/train.py --search` en deux phases (tri sur 2 plis puis confirmation sur 5), `--dry-run` qui affiche le plan et une durée estimée sans rien lancer. 15 tests ajoutés (79 au total) ; l'étape « choix de λ » est absorbée par la recherche. **Défaut trouvé par les tests avant tout lancement** : une surcharge d'argument (taille des lots) refusée par `train_config`. Aucun entraînement n'a été lancé pour cette étape.
+
 ## À faire ensuite
 
 Voir `plan.md` : étapes A, B, C de l'entraînement (sur accord de l'utilisateur), vérification de l'interface sur un journal complet, vidéo finale, rapport. Test du bouton « Enregistrer » à faire par l'utilisateur dans Chrome ou Edge.

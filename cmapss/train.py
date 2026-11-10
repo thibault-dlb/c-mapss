@@ -17,6 +17,7 @@ from torch import nn
 
 from .metrics import evaluate, evaluate_by_subset
 from .model import CnnGru, ModelConfig, describe, n_params, weight_layers
+from . import search
 from .windows import cap_rul
 
 
@@ -31,9 +32,37 @@ class TrainConfig:
     clip: float = 1.0
     seed: int = 0
     log_every: int = 50          # un événement `batch` tous les 50 lots
+    # Réglages recherchés (voir cmapss/search.py) ; `preset` est le nom du réglage, enregistré dans le journal
+    preset: str = "aucune"
+    dropout: float = 0.0
+    input_noise: float = 0.0     # écart-type du bruit gaussien ajouté aux entrées (entraînement seulement), en unités normalisées
+    weight_decay: float = 0.0    # AdamW si > 0, Adam sinon
+    channels: tuple = (32, 64)
+    hidden: int = 64
+    kernel: int = 5
 
     def to_dict(self):
-        return asdict(self)
+        d = asdict(self)
+        d["channels"] = list(self.channels)
+        return d
+
+
+def train_config(overrides=None, preset="", **kw):
+    """TrainConfig d'un réglage de `cmapss.search` (dictionnaire d'écarts au défaut) ; `kw` : graine, époques, patience..."""
+    f = search.full(overrides)
+    channels, hidden = search.SIZES[f["size"]]
+    fields = dict(preset=preset, cap=f["cap"], lam=f["lam"], lr=f["lr"], batch_size=f["batch_size"], dropout=f["dropout"],
+                  input_noise=f["input_noise"], weight_decay=f["weight_decay"], channels=channels, hidden=hidden,
+                  kernel=f["kernel"])
+    fields.update(kw)                                        # les arguments explicites l'emportent sur le réglage
+    return TrainConfig(**fields)
+
+
+def preset_config(name, **kw):
+    """TrainConfig d'un réglage nommé (`search.NAMED`)."""
+    if name not in search.NAMED:
+        raise ValueError(f"réglage inconnu : {name} (choix : {', '.join(search.NAMED)})")
+    return train_config(search.NAMED[name], preset=name, **kw)
 
 
 @dataclass
@@ -137,8 +166,12 @@ def train_run(data, cfg, journal=None, device="cpu", fixed_epochs=None, model_cf
     """
     set_seed(cfg.seed, device)
     n_feat = data.X_tr.shape[2]
-    model = CnnGru(model_cfg or ModelConfig(n_features=n_feat)).to(device)
-    opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
+    model = CnnGru(model_cfg or ModelConfig(n_features=n_feat, channels=tuple(cfg.channels), hidden=cfg.hidden,
+                                            kernel=cfg.kernel, dropout=cfg.dropout)).to(device)
+    if cfg.weight_decay > 0:
+        opt = torch.optim.AdamW(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+    else:
+        opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
     X = torch.from_numpy(np.ascontiguousarray(data.X_tr)).to(device)
     y = torch.from_numpy((cap_rul(data.rul_tr, cfg.cap) / cfg.cap).astype(np.float32)).to(device)
     reg = torch.from_numpy(data.reg_tr.astype(np.int64)).to(device)
@@ -178,7 +211,10 @@ def train_run(data, cfg, journal=None, device="cpu", fixed_epochs=None, model_cf
         run_s = np.zeros(2); run_n = 0
         for b, i in enumerate(range(0, n, cfg.batch_size)):
             idx = perm[i:i + cfg.batch_size].to(device)
-            r, l = model(X[idx])
+            xb = X[idx]
+            if cfg.input_noise > 0:                              # bruit sur les entrées : à l'entraînement seulement
+                xb = xb + cfg.input_noise * torch.randn_like(xb)
+            r, l = model(xb)
             loss, mse, bce = multitask_loss(r, y[idx], l, reg[idx], cfg.lam)
             opt.zero_grad(set_to_none=True)
             loss.backward()

@@ -102,3 +102,33 @@ def test_epoques_imposees_sans_validation():
     res, model = train_run(data, TrainConfig(batch_size=64), fixed_epochs=2)
     assert res["epochs_run"] == 2 and "val" not in res
     assert predict(model, X[:5])[0].shape == (5,)
+
+
+def test_train_config_traduit_un_reglage_de_recherche():
+    from cmapss.train import preset_config, train_config
+    c = train_config({"size": "grand", "kernel": 7, "lr": 3e-3, "cap": 175, "lam": 0.2, "batch_size": 512}, preset="x", seed=3)
+    assert (c.channels, c.hidden, c.kernel, c.lr, c.cap, c.lam, c.batch_size, c.seed, c.preset) == ((64, 128), 128, 7, 3e-3, 175, 0.2, 512, 3, "x")
+    p = preset_config("combinee")
+    assert (p.dropout, p.input_noise, p.weight_decay) == (0.3, 0.1, 1e-2)
+    assert preset_config("aucune").to_dict()["channels"] == [32, 64]       # sérialisable dans le journal
+
+
+def test_le_bruit_change_l_entrainement_et_adamw_tourne():
+    from cmapss.train import preset_config
+    base = TrainConfig(max_epochs=2, patience=2, batch_size=64, seed=0)
+    noisy = preset_config("bruit", max_epochs=2, patience=2, batch_size=64, seed=0)
+    a, _ = train_run(_run_data(False), base)
+    b, _ = train_run(_run_data(False), noisy)
+    assert [h["train_loss"] for h in a["history"]] != [h["train_loss"] for h in b["history"]]   # le bruit modifie bien l'entraînement
+    wd = preset_config("poids", max_epochs=2, patience=2, batch_size=64, seed=0)
+    c, _ = train_run(_run_data(False), wd)
+    assert c["history"][-1]["train_loss"] > 0                  # tourne avec AdamW
+
+
+def test_entrainement_avec_dropout_et_journal_enregistre_le_reglage(tmp_path):
+    from cmapss.train import preset_config
+    cfg = preset_config("dropout", max_epochs=2, patience=2, batch_size=64, seed=0)
+    p = tmp_path / "j.jsonl"
+    train_run(_run_data(), cfg, journal=Journal(p))
+    meta = json.loads(p.read_text(encoding="utf-8").splitlines()[1])
+    assert meta["config"]["preset"] == "dropout" and meta["config"]["dropout"] == 0.3 and meta["model"]["dropout"] == 0.3

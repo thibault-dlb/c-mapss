@@ -87,7 +87,8 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 | `docs/reseau.md` | Réseau CNN 1D + GRU, perte, protocole (5 plis × 5 graines), journal et interface d'entraînement, débit mesuré |
 | `cmapss/model.py`, `cmapss/train.py`, `scripts/train.py` | Réseau ; perte, boucle d'entraînement, arrêt précoce, journal ; étapes A, B, C |
 | `viz/entrainement/`, `viz/lib/record.js` | Tableau de bord d'entraînement en direct (`live.html`) et vidéo grand public (`index.html`) |
-| `tests/` | Tests `pytest` (64) |
+| `cmapss/search.py` | Espace de recherche d'hyperparamètres, tirage reproductible, classement pli par pli |
+| `tests/` | Tests `pytest` (79) |
 | `docs/plan.md` | Plan du projet et décisions en suspens |
 | `docs/journal.md` | Journal chronologique des actions réalisées |
 
@@ -116,7 +117,7 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 .\.venv\Scripts\python.exe scripts\baseline.py --all                 # validation croisée (plusieurs minutes), test, journaux
 .\.venv\Scripts\python.exe scripts\record_viz.py --page metriques/index.html   # vidéo des métriques (puis baseline/index.html)
 .\.venv\Scripts\python.exe scripts\serve_viz.py --path entrainement/live.html   # tableau de bord d'entraînement en direct
-# Entraînement (à ne lancer qu'avec l'accord de l'utilisateur) : scripts\train.py --smoke | --lambda-grid | --cv | --final (voir docs/reseau.md)
+# Entraînement (à ne lancer qu'avec l'accord de l'utilisateur) : scripts\train.py --search --dry-run (plan sans rien lancer) | --search | --cv | --final | --smoke (voir docs/reseau.md)
 ```
 
 ## Installation

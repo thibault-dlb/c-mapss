@@ -1,6 +1,6 @@
 # Réseau CNN 1D + GRU, perte, protocole et interface d'entraînement
 
-Étape de préparation terminée le 2026-11-10 : **tout est écrit et testé ; seuls des essais courts ont été faits, aucun entraînement complet n'a été lancé**. Code : `cmapss/model.py`, `cmapss/train.py` ; script : `scripts/train.py` ; interface : `viz/entrainement/` ; tests : `tests/test_model.py`, `tests/test_train.py`.
+Étape de préparation terminée le 2026-11-10 : **tout est écrit et testé ; seuls des essais courts ont été faits, aucun entraînement complet n'a été lancé**. Code : `cmapss/model.py`, `cmapss/train.py`, `cmapss/search.py` ; script : `scripts/train.py` ; interface : `viz/entrainement/` ; tests : `tests/test_model.py`, `tests/test_train.py`, `tests/test_search.py`.
 
 **Règle** : aucun entraînement (même court) n'est lancé sans l'accord explicite de l'utilisateur. Le périphérique par défaut est le **CPU de ce portable** (multi-threading) ; CUDA n'est utilisé que par `--device cuda`, sur décision de l'utilisateur seul.
 
@@ -23,23 +23,32 @@ Petit modèle volontairement (709 moteurs d'entraînement). La **structure** est
 
 `perte = MSE(RUL / 150, cible / 150) + λ · BCE(régime)`.
 
-- La RUL est plafonnée à 150 (choix de la baseline, `docs/baseline.md`) puis divisée par 150 : une MSE de 0,03 correspond environ à un RMSE de 26 cycles. **λ doit donc rester petit** pour que la tête régime ne domine pas la perte ; grille de départ `{0 ; 0,05 ; 0,2}`, à ajuster d'après les ordres de grandeur observés.
+- La RUL est plafonnée (150 par défaut, choix de la baseline ; le plafond fait partie de la recherche) puis divisée par ce plafond : une MSE de 0,03 correspond environ à un RMSE de 26 cycles. **λ doit donc rester petit** pour que la tête régime ne domine pas la perte ; λ fait partie de la recherche (`{0 ; 0,05 ; 0,2}`).
 - Le RMSE et le score PHM08 restent mesurés en cycles, contre la **vraie RUL non plafonnée**, sur les fenêtres de validation de vraie RUL 6 à 195 (comme la baseline : comparable).
 
 ## Protocole (`scripts/train.py`)
 
-| Étape | Commande | Contenu | Entraînements |
+L'essai de 12 époques a montré un surapprentissage dès l'époque 3 (voir plus bas). Le protocole commence donc par une **recherche d'hyperparamètres** large (régularisation, taille du réseau, taux d'apprentissage...), voulue longue : le portable peut tourner des heures ; CUDA n'est envisagé que si l'utilisateur le décide.
+
+| Étape | Commande | Contenu | Entraînements (par défaut) |
 |---|---|---|---|
-| Essai | `--smoke [--epochs 3]` | pli 0, graine 0, journal pour l'interface | 1 |
-| A. Choix de λ | `--lambda-grid` | 3 valeurs de λ × 5 plis × graine 0, comparaison **appariée par pli** | 15 |
-| B. Validation croisée | `--cv [--lam X]` | λ retenu, 5 plis × 5 graines (les 5 de la graine 0 sont repris de A) | 20 de plus |
+| Essai | `--smoke [--epochs 3] [--preset NOM] [--set dropout=0.3,lr=0.003]` | pli 0, graine 0, journal pour l'interface | 1 |
+| **R. Recherche** | `--search [--search-n 60] [--top 8]` | phase 1 « tri » : 6 réglages nommés + 60 tirés au hasard sur les plis 0 et 1 ; phase 2 « confirmation » : les 8 meilleurs (et « aucune ») sur les plis 2, 3 et 4 ; classement sur les 5 plis, **comparé pli par pli à « aucune »** | 132 + jusqu'à 27 |
+| B. Validation croisée | `--cv [--preset rNNN]` | meilleur réglage de R, 5 plis × 5 graines (les 5 de la graine 0 sont repris de R) | 20 de plus |
 | C. Final | `--final` | tout l'entraînement (scaler « full »), nombre d'époques = médiane des meilleures époques de B, 5 graines, **test évalué une seule fois par graine** ; moyenne des 5 prédictions aussi | 5 |
 
-- Adam (taux 1e-3), lots de 256, écrêtage de gradient à 1, **arrêt précoce** sur le RMSE de validation (patience 8, 50 époques maximum), meilleurs poids restaurés. Un contrôle (`check`) vérifie que le modèle restauré redonne bien le RMSE de la meilleure époque.
+**Paramètres cherchés** (`cmapss/search.py`, `SPACE`) : dropout `{0 ; 0,1 ; 0,2 ; 0,3 ; 0,5}`, bruit gaussien sur les entrées `{0 ; 0,05 ; 0,1 ; 0,2}`, décroissance des poids (AdamW) `{0 ; 1e-3 ; 1e-2 ; 1e-1}`, taille du réseau `{petit 16/32 canaux et 32 unités ; moyen 32/64 et 64 ; grand 64/128 et 128}`, noyau des convolutions `{3 ; 5 ; 7}`, taux d'apprentissage `{3e-4 ; 1e-3 ; 3e-3}`, taille des lots `{128 ; 256 ; 512}`, poids λ de la tête régime `{0 ; 0,05 ; 0,2}`, plafond de RUL `{125 ; 150 ; 175}`.
+**Réglages nommés** (toujours testés) : `aucune` (le réseau de l'essai, référence), `dropout` (0,3), `bruit` (0,1), `poids` (décroissance 1e-2), `petit`, `combinee` (dropout 0,3 + bruit 0,1 + décroissance 1e-2).
+
+- Le tirage est **reproductible** (graine 0, `--search-seed`), sans doublon, et les N premiers réglages ne changent pas si on augmente N. Les réglages tirés sont enregistrés dans les résultats sous les identifiants `r001`, `r002`...
+- Le choix se fait sur le RMSE de validation moyen. Si d'autres réglages sont à moins d'une erreur-type du meilleur, le script le dit (une seule graine : ils sont alors indiscernables).
+- **`--dry-run`** n'entraîne rien : il affiche le plan (réglages tirés, nombre d'entraînements, durée estimée). À utiliser avant tout lancement.
+- Adam (ou AdamW si décroissance des poids), écrêtage de gradient à 1, **arrêt précoce** sur le RMSE de validation (patience 8, 50 époques maximum), meilleurs poids restaurés. Un contrôle (`check`) vérifie que le modèle restauré redonne bien le RMSE de la meilleure époque.
 - Graines : `torch`, `numpy` et ordre des lots dépendent de la graine ; `cudnn.deterministic` si CUDA. Deux exécutions sur CPU avec la même graine donnent les mêmes pertes (testé) ; **CPU et GPU ne donneraient pas des nombres identiques**.
-- Résultats run par run dans `data/processed/train_results.json` (ignoré par Git) ; un run déjà fait est sauté (reprise possible).
+- Résultats run par run dans `data/processed/train_results.json` (ignoré par Git) ; un run déjà fait est sauté (**reprise possible** après une interruption, il suffit de relancer la même commande).
 - Options de parallélisme : `--workers K` entraînements en parallèle, `--threads N` threads par entraînement. Défaut : 4 × 2 threads.
-- `--journal` (étapes B et C) écrit le journal du pli 0, graine 0 (ou de la graine 0 en final) dans `viz/entrainement/journal.jsonl`.
+- `--journal` (étapes B et C) écrit le journal du pli 0, graine 0 (ou de la graine 0 en final) dans `viz/entrainement/journal.jsonl` ; le tableau de bord affiche le réglage utilisé.
+
 
 ### Débit mesuré sur ce portable (8 cœurs logiques, 31,7 Go de RAM)
 
@@ -53,7 +62,7 @@ Mesures faites avec de vrais entraînements de 3 époques (pli 0, 112 708 fenêt
 
 Le parallélisme donne donc environ **2,3 fois** le débit d'un seul entraînement sur 8 threads ; 4 × 2 est retenu (presque aussi rapide que 8 × 1, moins de mémoire, machine restée utilisable).
 
-**Estimation de la durée totale (35 entraînements dont 5 finals sur 25 % de données en plus)**, d'après ce débit et en supposant un nombre d'époques par entraînement : 20 époques ≈ 1 h 35, 40 époques ≈ 3 h. Le vrai nombre d'époques n'est pas connu avant l'étape A : l'estimation sera mise à jour avec les durées réelles affichées par le script (reste estimé après chaque entraînement terminé).
+**Estimation de la durée** (simulation `--dry-run`, d'après ce débit et **20 époques supposées** par entraînement ; le vrai nombre d'époques n'est connu qu'après les premiers entraînements, et les gros réseaux ou les petits lots sont plus lents) : recherche par défaut (66 réglages) ≈ 5 h pour la phase 1 (132 entraînements) plus ≈ 1 h pour la phase 2 (27), validation croisée ≈ 1 h (20 de plus), final < 1 h. Au total une demi-journée de calcul. Réduire avec `--search-n` (par exemple 20) ou `--top` ; augmenter avec `--search-n 150` si besoin. L'estimation sera corrigée par le script lui-même (reste estimé après chaque entraînement terminé).
 
 ### Essais courts déjà faits (avec l'accord de l'utilisateur pour le dernier)
 
@@ -66,7 +75,7 @@ Tous sur le pli 0, λ = 0,05, graine 0 (et 1 à 3 pour le premier), 17 capteurs,
 
 **Constat : le réseau surapprend dès l'époque 3.** L'erreur d'entraînement continue de baisser (MSE normalisée 0,028 → 0,006) pendant que l'erreur de validation remonte (0,0191 → 0,0307). À son meilleur moment (époque 3), il **ne bat pas la baseline** (24,46 contre 23,94 sur ce pli). C'est une seule graine sur un seul pli : une indication forte, pas une preuve. Le journal complet de cet essai est `viz/entrainement/journal.jsonl` ; la vidéo d'essai `reports/videos/entrainement_essai_simple.mp4` le montre honnêtement (ses légendes sont choisies d'après les valeurs du journal : elles disent que l'erreur remonte et que le réseau ne bat pas encore la baseline).
 
-**Conséquence : décision à prendre avant l'étape A.** Lancer les 35 entraînements tels quels mesurerait un réseau qui, au mieux, égale la baseline. Pistes de régularisation (non faites, à choisir par l'utilisateur) : dropout, décroissance des poids (`weight_decay` d'Adam), bruit gaussien sur les entrées, réseau plus petit, taux d'apprentissage plus bas. Elles se comparent avec le même protocole (pli par pli, mêmes graines).
+**Conséquence : la recherche d'hyperparamètres (étape R) vient avant tout le reste.** Lancer la validation croisée avec le réseau de l'essai mesurerait un réseau qui, au mieux, égale la baseline. Les régularisations (dropout, bruit sur les entrées, décroissance des poids, réseau plus petit, leur combinaison) et d'autres paramètres (taille, noyau, taux d'apprentissage, lots, λ, plafond) sont donc comparés pli par pli à « aucune ». Le réglage « aucune » est exactement le réseau de cet essai : sa courbe sert de référence.
 
 ## Journal d'entraînement (`viz/entrainement/journal.jsonl`)
 
