@@ -73,6 +73,12 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 | `docs/article-saxena-2008.md` | Résumé de l'article de référence (PHM08) |
 | `docs/exploration.md` | Résultats de l'exploration des données |
 | `scripts/explore.py` | Script d'exploration (figures dans `reports/figures/`) |
+| `docs/normalisation.md` | Normalisation par condition de vol, journal d'événements, page et vidéos |
+| `cmapss/` | Code commun : chargement (`data.py`), normalisation (`normalisation.py`), plis (`folds.py`), journal (`journal.py`) |
+| `scripts/normalise.py` | Plis, scalers par pli, contrôles ; `--journal` écrit le journal de la page |
+| `scripts/serve_viz.py`, `scripts/record_viz.py` | Servir la page de visualisation ; produire la vidéo (MP4) |
+| `viz/normalisation/` | Page D3 qui rejoue `journal.jsonl` (version simple et version `?mode=tech`) |
+| `tests/` | Tests `pytest` (15) |
 | `docs/plan.md` | Plan du projet et décisions en suspens |
 | `docs/journal.md` | Journal chronologique des actions réalisées |
 
@@ -81,9 +87,20 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 - Données téléchargées et extraites.
 - Analyse documentaire terminée (pages NASA, article, statistiques).
 - Exploration des données faite (`docs/exploration.md`).
-- Aucun code de modélisation écrit pour l'instant.
-- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`).
+- Normalisation par condition de vol faite et testée, avec sa visualisation filmable (`docs/normalisation.md`).
+- Pas encore de fenêtres glissantes ni de modèle.
+- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`). Fait pour la normalisation, à faire pour l'entraînement.
 - Environnement Python configuré (`.venv`, voir `requirements.txt` et `docs/plan.md`).
+
+## Commandes utiles
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest                                  # tests
+.\.venv\Scripts\python.exe scripts\normalise.py --journal            # plis, scalers, journal de la page
+.\.venv\Scripts\python.exe scripts\serve_viz.py                      # page de visualisation (localhost:8765)
+.\.venv\Scripts\python.exe -m playwright install chromium             # une fois, pour la vidéo automatique
+.\.venv\Scripts\python.exe scripts\record_viz.py                     # vidéo grand public (reports\videos\)
+```
 
 ## Installation
 

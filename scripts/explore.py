@@ -3,7 +3,11 @@
 Usage : .\\.venv\\Scripts\\python.exe scripts\\explore.py
 Écrit les figures dans reports/figures/ et affiche un résumé chiffré.
 """
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
 import matplotlib
 
@@ -12,29 +16,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent.parent
-RAW = ROOT / "data" / "raw"
+from cmapss.data import COLS, SENSORS, SETTINGS, SUBSETS, add_condition, load_train
+
 FIG = ROOT / "reports" / "figures"
 FIG.mkdir(parents=True, exist_ok=True)
-
-SETTINGS = ["op1", "op2", "op3"]
-SENSORS = [f"s{i}" for i in range(1, 22)]
-COLS = ["unit", "cycle"] + SETTINGS + SENSORS
-SUBSETS = ["FD001", "FD002", "FD003", "FD004"]
-
-
-def load_train(fd):
-    df = pd.read_csv(RAW / f"train_{fd}.txt", sep=r"\s+", header=None, names=COLS)
-    df["subset"] = fd
-    df["rul"] = df.groupby("unit")["cycle"].transform("max") - df["cycle"]
-    return df
-
-
-def add_condition(df):
-    """Condition de vol = réglages arrondis (1 seule pour FD001/FD003, 6 pour FD002/FD004)."""
-    # "+ 0.0" supprime les zéros négatifs (-0.0), qui créeraient de fausses conditions
-    parts = [np.round(df["op1"], 0) + 0.0, np.round(df["op2"], 2) + 0.0, np.round(df["op3"], 0) + 0.0]
-    return parts[0].astype(str) + "|" + parts[1].astype(str) + "|" + parts[2].astype(str)
 
 
 def main():

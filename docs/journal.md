@@ -27,6 +27,11 @@ Chronologie de la session (2026-11-09).
 
 17. **Nouvelle exigence de l'utilisateur** : tout doit être visuel et filmable (normalisation, entraînement, évolution de l'architecture). Ajoutée à `plan.md`.
 
+18. **Normalisation** (2026-11-10) : paquet `cmapss/` (chargement, `ConditionScaler`, plis), `scripts/normalise.py`, 15 tests. Premières versions écartées : une animation d'illustration inventait des états intermédiaires ; l'utilisateur a exigé de ne rien imaginer. Remplacée par un journal d'événements rejoué par la page (calcul de μ et σ par blocs réellement exécuté, états réels brut / x − μ / normalisé).
+19. **Constat pendant la mise au point** : `s16` est constant dans 4 des 6 conditions (l'exploration l'avait raté, corrigé dans `exploration.md`) ; `s6` et `s16` rendent les statistiques instables en validation.
+20. **Page et vidéos** : page D3 (`viz/normalisation/`), version technique (86 s) puis version grand public (59 s, 4 scènes) sur retour de l'utilisateur (« trop d'info »). Corrections demandées : droite d'approximation au lieu d'une moyenne glissante (R² = 0,17, limite signalée), nom du traitement affiché entre « avant » et « après », explication de la scène 4. Erreur de ma part : un rendu lancé avec `&` a d'abord été cru perdu alors qu'il tournait toujours.
+21. **Doc** : `normalisation.md`, `requirements.txt` (pytest, playwright).
+
 ## À faire ensuite
 
-Voir `plan.md` : script de préparation (avec animation de la normalisation), baseline, modèle CNN 1D + GRU avec tableau de bord d'entraînement en direct, évaluation. Choix ouvert : fenêtre matplotlib ou page web locale pour la visualisation.
+Voir `plan.md` : préparation des fenêtres glissantes, baseline, modèle CNN 1D + GRU avec tableau de bord d'entraînement en direct (même principe de journal), évaluation. Test du bouton « Enregistrer » à faire par l'utilisateur dans Chrome ou Edge.

@@ -10,6 +10,8 @@ Script : `scripts/explore.py` (affiche un résumé chiffré et écrit les figure
 - **Capteurs constants à l'intérieur de chaque condition** : `s1`, `s5`, `s18`, `s19` (écart-type nul dans les 4 jeux). Ils ne varient dans FD002 et FD004 qu'à cause des conditions de vol : à écarter.
 - **Capteurs retenus (17)** : `s2, s3, s4, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s20, s21`.
   - `s6`, `s10` et `s16` sont (quasi) constants dans FD001 et/ou FD003 et ne varient que dans FD002 et FD004. Ils sont gardés par le critère (|r| ≥ 0,1 dans au moins un jeu) mais leur utilité est faible : à tester par ablation.
+  - **Correction (2026-11-10)** : `s16` est en réalité **constant dans 4 des 6 conditions de vol** (1, 4, 5 et 6) et ne prend que 2 valeurs dans les 2 autres. L'exploration initiale l'avait raté, car son critère de « capteur constant » regardait le maximum sur tous les jeux. La normalisation gère le cas (valeur normalisée 0 là où il est constant). Il est gardé pour l'instant, comme décidé, mais c'est le premier candidat à retirer.
+  - **Instabilité mesurée en validation croisée** : les plus gros écarts de moyenne et d'écart-type entre entraînement et validation viennent de `s6` (condition 1 : moyenne 0,44 et écart-type 1,59 dans le pli 4) et de `s16` (condition 2 : écart-type 2,00 dans le pli 2). Ce sont deux capteurs quasi constants avec de rares sauts : leur z-score dépend de quelques événements. Cause probable, non démontrée. À trancher par ablation (voir `docs/normalisation.md`).
 - **Durée de vie** : minimum 128 cycles dans tous les jeux, maximum 362 à 543. Moyenne autour de 206 (FD001, FD002) et 246 (FD003, FD004).
 
 ## Résultat à retenir : les jeux ne se dégradent pas de la même façon

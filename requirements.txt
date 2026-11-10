@@ -2,3 +2,7 @@ numpy==2.5.4
 pandas==3.1.1
 scikit-learn==1.9.1
 matplotlib==3.11.2
+
+# Tests et visualisation (vidéo)
+pytest==9.2.0
+playwright==1.65.0   # puis : python -m playwright install chromium

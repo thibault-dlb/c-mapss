@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normalisation par condition de vol – C-MAPSS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<div id="countdown" hidden></div>
+
+<div id="controls">
+  <button id="prev" title="Scène précédente (←)">⏮</button>
+  <button id="play" title="Lecture / pause (Espace)">▶</button>
+  <button id="next" title="Scène suivante (→)">⏭</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0">
+  <span id="time">0:00 / 0:00</span>
+  <label>Vitesse
+    <select id="speed">
+      <option value="0.5">0,5×</option>
+      <option value="1" selected>1×</option>
+      <option value="2">2×</option>
+    </select>
+  </label>
+  <button id="rec" title="Filme l'onglet (Chrome ou Edge) et télécharge la vidéo">● Enregistrer</button>
+</div>
+
+<div id="msg" hidden></div>
+
+<script src="../lib/d3.v7.9.0.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

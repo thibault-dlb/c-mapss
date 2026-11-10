@@ -51,6 +51,12 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 - Fenêtres plus courtes que 30 cycles (certains moteurs de test n'en ont que 19 à 38) : **compléter avec la première valeur** (padding par répétition du premier cycle).
 - Environnement : installé ensuite à la demande de l'utilisateur (voir plus bas).
 
+## Avancement (2026-11-10)
+
+- Terminé : environnement, exploration (`exploration.md`), **normalisation par condition de vol et sa visualisation** (`normalisation.md`).
+- Prochaine étape : script de préparation des fenêtres (30 cycles, padding, RUL plafonnée), puis baseline, puis modèle CNN 1D + GRU avec tableau de bord d'entraînement.
+- À trancher par ablation sur la validation : garder ou retirer `s6`, `s10`, `s16` (statistiques instables d'un pli à l'autre).
+
 ## Exigence : tout doit être visuel et filmable (2026-11-10)
 
 Demande de l'utilisateur : pouvoir **enregistrer en vidéo** ce qui se passe, surtout pendant la **normalisation des données** et pendant **l'entraînement**, y compris **l'évolution de l'architecture du réseau de neurones**.
@@ -61,7 +67,8 @@ Conséquences pour les scripts :
 - Entraînement : tableau de bord **en direct** pendant l'apprentissage, avec au minimum le schéma du réseau (couches, poids et activations qui évoluent), la courbe de perte (entraînement et validation), et RUL prédite contre RUL réelle qui se précise au fil des époques.
 - Chaque visualisation doit être lisible à l'écran (grande police, couleurs contrastées) et pouvoir aussi s'exporter en fichier vidéo ou GIF.
 - Le tableau de bord doit fonctionner sur les deux machines (CPU ici, CUDA sur l'autre PC).
-- Point ouvert : fenêtre locale (matplotlib) ou page web locale. Voir le journal.
+- **Décidé** : page web locale (D3.js), qui rejoue un **journal d'événements** écrit par les scripts (la page ne calcule rien). Vidéo par capture réelle de l'onglet (bouton, non testé) ou rendu automatique image par image depuis le journal. Fait pour la normalisation ; le même principe s'appliquera à l'entraînement (journal de lots, d'époques, de statistiques par couche).
+- La vidéo grand public doit rester simple : une phrase par scène, pas de formule ni de chiffres techniques (retour de l'utilisateur).
 
 ## Environnement Python (installé)
 
