@@ -42,12 +42,14 @@ Non fournis aux participants (servent au calcul de la santé) : T48 (EGT), SmFan
 
 ## Métrique : score asymétrique
 
-Avec `d = RUL estimée − RUL réelle`, `a1 = 10`, `a2 = 13` :
+Avec `d = RUL estimée − RUL réelle` (équation 11 de l'article, constantes `a1 = 10` et `a2 = 13`) :
 
-- si `d < 0` : `s = Σ (exp(−d/a1) − 1)` (prédiction précoce)
-- si `d ≥ 0` : `s = Σ (exp(d/a2) − 1)` (prédiction tardive)
+- si `d < 0` (prédiction **précoce**) : `s = Σ (exp(−d/13) − 1)`
+- si `d ≥ 0` (prédiction **tardive**) : `s = Σ (exp(d/10) − 1)`
 
-Une prédiction **tardive** est plus pénalisée qu'une précoce (logique pour la sécurité). La pénalité croît exponentiellement avec l'erreur.
+Une prédiction **tardive** est plus pénalisée qu'une précoce (logique pour la sécurité) : c'est la constante la plus petite, 10, qui s'applique à la branche tardive. La pénalité croît exponentiellement avec l'erreur.
+
+**Correction (2026-11-10)** : une version précédente de cette note appliquait `a1 = 10` à la branche précoce, ce qui pénaliserait davantage les prédictions précoces et contredisait la phrase ci-dessus. Le texte de l'article dit que « les prédictions tardives sont plus pénalisées que les précoces » ; la littérature applique 13 au précoce et 10 au tardif (par exemple l'article n°2348 de la PHM Society et arXiv 2410.03134). L'extraction du texte du PDF brouille l'équation 11 : on n'y lit pas à quelle branche va chaque constante, donc cette attribution repose sur le texte de l'article et sur la littérature, pas sur une lecture directe de l'équation. Le code (`cmapss/metrics.py`) la fige dans des constantes nommées et un test vérifie la propriété « tardif plus pénalisé que précoce ».
 
 L'article suggère aussi de pondérer plus fort les RUL courtes (plus importantes) et d'ajouter une **métrique de corrélation**, car des scores agrégés identiques peuvent cacher des comportements très différents selon les moteurs.
 

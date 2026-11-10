@@ -53,9 +53,11 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 
 ## Avancement (2026-11-10)
 
-- Terminé : environnement, exploration (`exploration.md`), **normalisation par condition de vol** (`normalisation.md`), **fenêtres glissantes** (`fenetres.md`), chacune avec sa vidéo.
-- Prochaines étapes, dans l'ordre : chargeur de données par pli (scaler du pli, fenêtres, lots PyTorch) ; métriques (RMSE et score PHM08) ; baseline ; modèle CNN 1D + GRU et fonction de perte ; format du journal et tableau de bord d'entraînement ; protocole (graines, arrêt précoce, validation croisée).
-- À trancher par ablation sur la validation : garder ou retirer `s6`, `s10`, `s16` (statistiques instables d'un pli à l'autre).
+- Terminé : environnement, exploration (`exploration.md`), **normalisation par condition de vol** (`normalisation.md`), **fenêtres glissantes** (`fenetres.md`), **chargeur par pli, métriques et baseline** (`baseline.md`), chacune avec sa vidéo.
+- **Score à battre** (baseline Gradient Boosting, test, une fenêtre par moteur) : RMSE 21,67 au total (FD001 15,9 ; FD002 23,7 ; FD003 16,6 ; FD004 23,2), score PHM08 8 897.
+- **Décidé par la validation croisée** : plafond de RUL **150** (175 indiscernable) ; retrait de `s6`, `s10`, `s16` : **aucune différence mesurable** (0,04 à 0,07 cycle d'écart pour 0,5 d'écart-type), on garde les 17 capteurs par défaut.
+- Prochaines étapes, dans l'ordre : modèle CNN 1D + GRU à deux sorties et fonction de perte ; format du journal d'entraînement et tableau de bord filmable ; protocole (graines, arrêt précoce, validation croisée).
+- Point d'attention : le classifieur de régime de la baseline reconnaît mal les jeux à deux modes (FD003 49 %, FD004 54 %) ; l'étiquette proxy est faible, voir `baseline.md`.
 
 ## Exigence : tout doit être visuel et filmable (2026-11-10)
 

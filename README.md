@@ -41,7 +41,7 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 
 ### Architecture envisagée (recommandation, pas encore validée)
 
-1. **Baseline :** Random Forest ou Gradient Boosting sur des statistiques calculées sur la fenêtre, plus les conditions de vol. Elle sert de point de comparaison.
+1. **Baseline (faite) :** Gradient Boosting sur des statistiques calculées sur la fenêtre, plus les conditions de vol. Elle sert de point de comparaison.
 2. **Modèle principal :** un petit réseau CNN 1D suivi d'un GRU (ou LSTM), avec une tête RUL et une tête de classification du régime de panne.
 
 ### Évaluation
@@ -81,7 +81,10 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 | `docs/fenetres.md` | Fenêtres glissantes : règles, effectifs réels, vidéo |
 | `cmapss/windows.py`, `scripts/fenetres.py` | Fabrication des fenêtres de 30 cycles ; contrôles et journal de la vidéo |
 | `viz/fenetres/`, `viz/lib/` | Page de la vidéo des fenêtres ; cœur commun des pages (`core.js`, style, D3) |
-| `tests/` | Tests `pytest` (27) |
+| `docs/baseline.md` | Chargeur par pli, métriques (RMSE, score PHM08), baseline Gradient Boosting, résultats chiffrés |
+| `cmapss/loader.py`, `metrics.py`, `baseline.py`, `scripts/baseline.py` | Chargeur par pli ; métriques ; statistiques de fenêtre et modèle ; validation croisée, test, journaux |
+| `viz/metriques/`, `viz/baseline/` | Pages des vidéos des métriques et de la baseline |
+| `tests/` | Tests `pytest` (51) |
 | `docs/plan.md` | Plan du projet et décisions en suspens |
 | `docs/journal.md` | Journal chronologique des actions réalisées |
 
@@ -92,8 +95,9 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 - Exploration des données faite (`docs/exploration.md`).
 - Normalisation par condition de vol faite et testée, avec sa visualisation filmable (`docs/normalisation.md`).
 - Fenêtres glissantes faites et testées, avec leur vidéo (`docs/fenetres.md`).
-- Pas encore de chargeur par pli, de métriques, de baseline ni de modèle.
-- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`). Fait pour la normalisation, à faire pour l'entraînement.
+- Chargeur par pli, métriques et baseline faits, avec leurs deux vidéos (`docs/baseline.md`) : score à battre RMSE 21,67 sur le test, plafond de RUL 150.
+- Pas encore de réseau de neurones.
+- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`). Fait pour la normalisation, les fenêtres, les métriques et la baseline ; à faire pour l'entraînement.
 - Environnement Python configuré (`.venv`, voir `requirements.txt` et `docs/plan.md`).
 
 ## Commandes utiles
@@ -106,6 +110,8 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 .\.venv\Scripts\python.exe -m playwright install chromium             # une fois, pour la vidéo automatique
 .\.venv\Scripts\python.exe scripts\record_viz.py                     # vidéo de la normalisation (reports\videos\)
 .\.venv\Scripts\python.exe scripts\record_viz.py --page fenetres/index.html   # vidéo des fenêtres
+.\.venv\Scripts\python.exe scripts\baseline.py --all                 # validation croisée (plusieurs minutes), test, journaux
+.\.venv\Scripts\python.exe scripts\record_viz.py --page metriques/index.html   # vidéo des métriques (puis baseline/index.html)
 ```
 
 ## Installation
