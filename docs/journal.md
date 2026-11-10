@@ -32,6 +32,9 @@ Chronologie de la session (2026-11-09).
 20. **Page et vidéos** : page D3 (`viz/normalisation/`), version technique (86 s) puis version grand public (59 s, 4 scènes) sur retour de l'utilisateur (« trop d'info »). Corrections demandées : droite d'approximation au lieu d'une moyenne glissante (R² = 0,17, limite signalée), nom du traitement affiché entre « avant » et « après », explication de la scène 4. Erreur de ma part : un rendu lancé avec `&` a d'abord été cru perdu alors qu'il tournait toujours.
 21. **Doc** : `normalisation.md`, `requirements.txt` (pytest, playwright).
 
+22. **Fenêtres glissantes** (2026-11-10) : `cmapss/windows.py` (entraînement : fenêtres complètes seulement ; test : une fenêtre par moteur avec remplissage), `scripts/fenetres.py`, 12 tests, `docs/fenetres.md`. 139 798 fenêtres d'entraînement, 707 de test dont 17 complétées. Corrigé au passage : « 549 moteurs » dans le README et `plan.md` était faux (709).
+23. **Vidéo des fenêtres** : mise en commun du code de lecture dans `viz/lib/core.js` (vérifié : 30 images de la page de normalisation identiques à l'octet près avant et après), nouvelle page `viz/fenetres/` rejouant un journal où chaque fenêtre du moteur de démonstration est créée par le vrai code. Erreurs repérées et corrigées avant livraison : un pied de page modifié par mon découpage (« Rejeu de » au lieu de « du »), une variable réutilisée qui faussait un message du script, et des colonnes de la scène 4 qui laissaient croire à tort que gauche = entraînement et droite = validation.
+
 ## À faire ensuite
 
-Voir `plan.md` : préparation des fenêtres glissantes, baseline, modèle CNN 1D + GRU avec tableau de bord d'entraînement en direct (même principe de journal), évaluation. Test du bouton « Enregistrer » à faire par l'utilisateur dans Chrome ou Edge.
+Voir `plan.md` : chargeur par pli, métriques, baseline, modèle CNN 1D + GRU avec tableau de bord d'entraînement en direct (même principe de journal), évaluation. Test du bouton « Enregistrer » à faire par l'utilisateur dans Chrome ou Edge.

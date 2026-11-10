@@ -16,7 +16,7 @@ Pour un moteur d'avion (turbofan) en service, on dispose de mesures de capteurs 
 
 ### Données utilisées
 
-**Les quatre sous-ensembles FD001 à FD004 sont utilisés ensemble** pour l'entraînement, soit environ 160 000 lignes et 549 moteurs.
+**Les quatre sous-ensembles FD001 à FD004 sont utilisés ensemble** pour l'entraînement, soit 160 359 lignes et 709 moteurs.
 
 | Jeu | Conditions de vol | Modes de panne |
 |---|---|---|
@@ -78,7 +78,10 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 | `scripts/normalise.py` | Plis, scalers par pli, contrôles ; `--journal` écrit le journal de la page |
 | `scripts/serve_viz.py`, `scripts/record_viz.py` | Servir la page de visualisation ; produire la vidéo (MP4) |
 | `viz/normalisation/` | Page D3 qui rejoue `journal.jsonl` (version simple et version `?mode=tech`) |
-| `tests/` | Tests `pytest` (15) |
+| `docs/fenetres.md` | Fenêtres glissantes : règles, effectifs réels, vidéo |
+| `cmapss/windows.py`, `scripts/fenetres.py` | Fabrication des fenêtres de 30 cycles ; contrôles et journal de la vidéo |
+| `viz/fenetres/`, `viz/lib/` | Page de la vidéo des fenêtres ; cœur commun des pages (`core.js`, style, D3) |
+| `tests/` | Tests `pytest` (27) |
 | `docs/plan.md` | Plan du projet et décisions en suspens |
 | `docs/journal.md` | Journal chronologique des actions réalisées |
 
@@ -88,7 +91,8 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 - Analyse documentaire terminée (pages NASA, article, statistiques).
 - Exploration des données faite (`docs/exploration.md`).
 - Normalisation par condition de vol faite et testée, avec sa visualisation filmable (`docs/normalisation.md`).
-- Pas encore de fenêtres glissantes ni de modèle.
+- Fenêtres glissantes faites et testées, avec leur vidéo (`docs/fenetres.md`).
+- Pas encore de chargeur par pli, de métriques, de baseline ni de modèle.
 - Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`). Fait pour la normalisation, à faire pour l'entraînement.
 - Environnement Python configuré (`.venv`, voir `requirements.txt` et `docs/plan.md`).
 
@@ -97,9 +101,11 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 ```powershell
 .\.venv\Scripts\python.exe -m pytest                                  # tests
 .\.venv\Scripts\python.exe scripts\normalise.py --journal            # plis, scalers, journal de la page
-.\.venv\Scripts\python.exe scripts\serve_viz.py                      # page de visualisation (localhost:8765)
+.\.venv\Scripts\python.exe scripts\fenetres.py --journal              # fenêtres sur les données réelles + journal de la vidéo
+.\.venv\Scripts\python.exe scripts\serve_viz.py                      # pages de visualisation (localhost:8765/normalisation/ ou /fenetres/)
 .\.venv\Scripts\python.exe -m playwright install chromium             # une fois, pour la vidéo automatique
-.\.venv\Scripts\python.exe scripts\record_viz.py                     # vidéo grand public (reports\videos\)
+.\.venv\Scripts\python.exe scripts\record_viz.py                     # vidéo de la normalisation (reports\videos\)
+.\.venv\Scripts\python.exe scripts\record_viz.py --page fenetres/index.html   # vidéo des fenêtres
 ```
 
 ## Installation

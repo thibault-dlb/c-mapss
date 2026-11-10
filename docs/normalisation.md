@@ -57,6 +57,7 @@ Le journal ne couvre que le scaler « full ». Les scalers des plis utilisent le
 
 - **Mode simple** (défaut, 59 s, 4 scènes) : une phrase par scène, pas de formule. AVANT, puis le nom du traitement, puis APRÈS.
 - **Mode technique** (`?mode=tech`, 86 s, 5 scènes) : calcul de μ et σ bloc par bloc, formule, traçabilité.
+- **Cœur commun** : la lecture du journal, la chronologie, les contrôles et l'enregistrement sont dans `viz/lib/core.js` ; chaque page (`viz/normalisation/app.js`, `viz/fenetres/app.js`) ne contient que ses scènes. Le découpage a été vérifié sur 30 images (modes simple et technique) : identiques à l'octet près.
 - **Rendu automatique** : `record_viz.py` rejoue le journal image par image (Playwright + ffmpeg). Deux rendus du même instant sont identiques à l'octet près (3 images comparées).
 - **Bouton « Enregistrer »** de la page : capture l'onglet en temps réel (Chrome ou Edge). **Non testé**, il demande une action humaine.
 - Il faut installer Chromium une fois : `.\.venv\Scripts\python.exe -m playwright install chromium`.

@@ -42,7 +42,8 @@ def main():
         sys.exit("ffmpeg introuvable dans le PATH.")
     if not (VIZ / "normalisation" / "journal.jsonl").exists():
         sys.exit("viz/normalisation/journal.jsonl absent : lancer scripts/normalise.py --journal")
-    name = "normalisation_simple.mp4" if args.mode == "simple" else "normalisation_technique.mp4"
+    page_dir = Path(args.page).parent.name or "video"   # normalisation, fenetres...
+    name = f"{page_dir}_{'simple' if args.mode == 'simple' else 'technique'}.mp4"
     out = Path(args.out) if args.out else ROOT / "reports" / "videos" / name
     out.parent.mkdir(parents=True, exist_ok=True)
 

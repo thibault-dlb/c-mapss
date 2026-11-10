@@ -32,7 +32,7 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 
 - **Baseline** : Random Forest ou Gradient Boosting sur des statistiques de fenêtre + les 3 conditions de vol.
 - **Modèle principal** : CNN 1D puis GRU (ou LSTM) sur une fenêtre d'environ 30 cycles ; entrées = capteurs utiles + 3 réglages opérationnels ; sortie = RUL plafonnée ; perte MSE ou Huber.
-- Petit modèle volontairement (environ 549 moteurs au total) ; Transformer en option seulement.
+- Petit modèle volontairement (709 moteurs d'entraînement au total) ; Transformer en option seulement.
 - ~~Variable « sous-ensemble » en entrée~~ : **rejetée par l'utilisateur**. Au test, le modèle doit deviner lui-même le mode de panne. Piste : apprentissage multitâche (tête RUL + tête « mode de panne »), voir ci-dessous.
 - Limite à garder en tête : les fichiers ne donnent pas le mode de panne **par moteur**, seulement par sous-ensemble (FD001 et FD002 : HPC seul ; FD003 et FD004 : HPC et fan). Une étiquette de mode ne peut donc être qu'un proxy grossier (« régime HPC seul » contre « régime à deux modes »).
 - Les conditions de vol (1 ou 6) se déduisent des réglages d'entrée eux-mêmes : inutile de les prédire.
@@ -53,8 +53,8 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 
 ## Avancement (2026-11-10)
 
-- Terminé : environnement, exploration (`exploration.md`), **normalisation par condition de vol et sa visualisation** (`normalisation.md`).
-- Prochaine étape : script de préparation des fenêtres (30 cycles, padding, RUL plafonnée), puis baseline, puis modèle CNN 1D + GRU avec tableau de bord d'entraînement.
+- Terminé : environnement, exploration (`exploration.md`), **normalisation par condition de vol** (`normalisation.md`), **fenêtres glissantes** (`fenetres.md`), chacune avec sa vidéo.
+- Prochaines étapes, dans l'ordre : chargeur de données par pli (scaler du pli, fenêtres, lots PyTorch) ; métriques (RMSE et score PHM08) ; baseline ; modèle CNN 1D + GRU et fonction de perte ; format du journal et tableau de bord d'entraînement ; protocole (graines, arrêt précoce, validation croisée).
 - À trancher par ablation sur la validation : garder ou retirer `s6`, `s10`, `s16` (statistiques instables d'un pli à l'autre).
 
 ## Exigence : tout doit être visuel et filmable (2026-11-10)
