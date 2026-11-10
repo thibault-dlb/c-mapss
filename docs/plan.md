@@ -6,11 +6,11 @@ Objectif : entraîner un modèle d'IA de **prédiction de RUL** (maintenance pr�
 
 - Python 3.12.10 installé.
 - Aucune bibliothèque de data science détectée dans `pip list` (numpy, pandas, scikit-learn, torch, matplotlib, etc.).
-- Pas de GPU NVIDIA (`nvidia-smi` introuvable) : entraînement sur CPU, suffisant pour ce dataset.
+- Pas de GPU NVIDIA sur **cette** machine (`nvidia-smi` introuvable) : mise au point et exploration sur CPU. L'entraînement final se fera probablement sur un autre PC avec GPU CUDA (voir « Environnement Python »).
 
 ## Étapes proposées
 
-1. **Environnement** : venv dans `C:\Users\thibd\C-MAPSS`, installation de pandas, numpy, scikit-learn, matplotlib et PyTorch (CPU).
+1. ~~**Environnement**~~ : fait (voir « Environnement Python (installé) »).
 2. **Exploration (EDA)** : charger les données, repérer les capteurs constants ou inutiles, tracer les dégradations.
 3. **Préparation** :
    - normalisation des capteurs (par condition de vol pour FD002 et FD004) ;
@@ -18,13 +18,14 @@ Objectif : entraîner un modèle d'IA de **prédiction de RUL** (maintenance pr�
    - fenêtres glissantes (environ 30 cycles).
 4. **Modèles** : baseline simple (régression linéaire ou Random Forest), puis deep learning (LSTM ou CNN 1D) avec PyTorch.
 5. **Évaluation** : RMSE sur le test (référence : `RUL_FD00x.txt`) et score asymétrique PHM08, courbes prédiction contre réalité, validation croisée par moteur.
-6. **Livrable** : notebook ou scripts propres, figures pour le rapport.
+6. **Livrable** : scripts Python propres (pas de notebook), figures pour le rapport.
 
 Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteurs inutiles sur FD001) viennent de la pratique courante sur ce benchmark, pas des fichiers du projet : à vérifier pendant l'exploration.
 
 ## Décisions en suspens
 
-- Périmètre : commencer par **FD001** puis étendre à FD002 à FD004 ? (proposé, non confirmé)
+- Aucune pour l'instant.
+- ~~Périmètre~~ : **les 4 sous-ensembles ensemble dès le départ** (décidé le 2026-11-09, voir « Décisions prises »).
 - ~~Format~~ : **scripts Python, pas de notebook** (décidé le 2026-11-09).
 
 ## Architecture envisagée (recommandation, non encore validée)

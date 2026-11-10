@@ -21,6 +21,8 @@ Chronologie de la session (2026-11-09).
 
 14. **Deux machines** (CPU ici, CUDA pour l'entraînement) : `requirements.txt` allégé (sans PyTorch), ajout de `requirements-cpu.txt`, `requirements-cuda.txt` (cu134) et `scripts/check_gpu.py`. Index `cpu`, `cu132`, `cu134` vérifiés pour torch 2.15.0. Variante CUDA non testée faute de GPU.
 
+15. **Correction de la doc** (2026-11-10) : périmètre et format tranchés, mention des deux machines dans `plan.md`.
+
 ## À faire ensuite
 
-Voir `plan.md` : choisir FD001 d'abord ou tous les jeux, notebook ou scripts, puis configurer l'environnement et explorer les données.
+Voir `plan.md` : exploration des données (capteurs inutiles, courbes de dégradation), puis script de préparation, baseline, modèle CNN 1D + GRU, évaluation.
