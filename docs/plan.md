@@ -51,6 +51,18 @@ Les valeurs « usuelles » (plafond de RUL, taille de fenêtre, nombre de capteu
 - Fenêtres plus courtes que 30 cycles (certains moteurs de test n'en ont que 19 à 38) : **compléter avec la première valeur** (padding par répétition du premier cycle).
 - Environnement : installé ensuite à la demande de l'utilisateur (voir plus bas).
 
+## Exigence : tout doit être visuel et filmable (2026-11-10)
+
+Demande de l'utilisateur : pouvoir **enregistrer en vidéo** ce qui se passe, surtout pendant la **normalisation des données** et pendant **l'entraînement**, y compris **l'évolution de l'architecture du réseau de neurones**.
+
+Conséquences pour les scripts :
+
+- Normalisation : animation avant / après par condition de vol (pas seulement des figures statiques).
+- Entraînement : tableau de bord **en direct** pendant l'apprentissage, avec au minimum le schéma du réseau (couches, poids et activations qui évoluent), la courbe de perte (entraînement et validation), et RUL prédite contre RUL réelle qui se précise au fil des époques.
+- Chaque visualisation doit être lisible à l'écran (grande police, couleurs contrastées) et pouvoir aussi s'exporter en fichier vidéo ou GIF.
+- Le tableau de bord doit fonctionner sur les deux machines (CPU ici, CUDA sur l'autre PC).
+- Point ouvert : fenêtre locale (matplotlib) ou page web locale. Voir le journal.
+
 ## Environnement Python (installé)
 
 - Venv : `.venv` à la racine du projet (ignoré par Git).

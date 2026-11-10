@@ -23,6 +23,10 @@ Chronologie de la session (2026-11-09).
 
 15. **Correction de la doc** (2026-11-10) : périmètre et format tranchés, mention des deux machines dans `plan.md`.
 
+16. **Exploration des données** : `scripts/explore.py`, résultats dans `exploration.md`, figures dans `reports/figures/`. Première version fausse (4 fausses conditions à cause de `-0.0`, et critère de capteur inutile trompé par les inversions de signe entre jeux), corrigée avant d'interpréter.
+
+17. **Nouvelle exigence de l'utilisateur** : tout doit être visuel et filmable (normalisation, entraînement, évolution de l'architecture). Ajoutée à `plan.md`.
+
 ## À faire ensuite
 
-Voir `plan.md` : exploration des données (capteurs inutiles, courbes de dégradation), puis script de préparation, baseline, modèle CNN 1D + GRU, évaluation.
+Voir `plan.md` : script de préparation (avec animation de la normalisation), baseline, modèle CNN 1D + GRU avec tableau de bord d'entraînement en direct, évaluation. Choix ouvert : fenêtre matplotlib ou page web locale pour la visualisation.

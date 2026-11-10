@@ -71,6 +71,8 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 | `docs/datasets.md` | Les deux pages NASA analysées |
 | `docs/donnees.md` | Format, statistiques et suffisance des données |
 | `docs/article-saxena-2008.md` | Résumé de l'article de référence (PHM08) |
+| `docs/exploration.md` | Résultats de l'exploration des données |
+| `scripts/explore.py` | Script d'exploration (figures dans `reports/figures/`) |
 | `docs/plan.md` | Plan du projet et décisions en suspens |
 | `docs/journal.md` | Journal chronologique des actions réalisées |
 
@@ -78,7 +80,9 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 
 - Données téléchargées et extraites.
 - Analyse documentaire terminée (pages NASA, article, statistiques).
+- Exploration des données faite (`docs/exploration.md`).
 - Aucun code de modélisation écrit pour l'instant.
+- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`).
 - Environnement Python configuré (`.venv`, voir `requirements.txt` et `docs/plan.md`).
 
 ## Installation
