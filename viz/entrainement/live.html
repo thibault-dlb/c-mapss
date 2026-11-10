@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entraînement en direct – C-MAPSS</title>
+<link rel="stylesheet" href="../lib/style.css">
+</head>
+<body>
+<div id="stage"></div>
+
+<div id="countdown" hidden></div>
+
+<div id="controls">
+  <span id="source">journal : …</span>
+  <span id="state">en attente</span>
+  <button id="rec" title="Filme l'onglet (Chrome ou Edge) et télécharge la vidéo ; Échap pour arrêter">● Enregistrer</button>
+</div>
+
+<div id="msg" hidden></div>
+
+<script src="../lib/d3.v7.9.0.min.js"></script>
+<script src="../lib/record.js"></script>
+<script src="live.js"></script>
+</body>
+</html>

@@ -42,7 +42,7 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 ### Architecture envisagée (recommandation, pas encore validée)
 
 1. **Baseline (faite) :** Gradient Boosting sur des statistiques calculées sur la fenêtre, plus les conditions de vol. Elle sert de point de comparaison.
-2. **Modèle principal :** un petit réseau CNN 1D suivi d'un GRU (ou LSTM), avec une tête RUL et une tête de classification du régime de panne.
+2. **Modèle principal (écrit, pas encore entraîné) :** un petit réseau CNN 1D suivi d'un GRU (ou LSTM), avec une tête RUL et une tête de classification du régime de panne.
 
 ### Évaluation
 
@@ -84,7 +84,10 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 | `docs/baseline.md` | Chargeur par pli, métriques (RMSE, score PHM08), baseline Gradient Boosting, résultats chiffrés |
 | `cmapss/loader.py`, `metrics.py`, `baseline.py`, `scripts/baseline.py` | Chargeur par pli ; métriques ; statistiques de fenêtre et modèle ; validation croisée, test, journaux |
 | `viz/metriques/`, `viz/baseline/` | Pages des vidéos des métriques et de la baseline |
-| `tests/` | Tests `pytest` (51) |
+| `docs/reseau.md` | Réseau CNN 1D + GRU, perte, protocole (5 plis × 5 graines), journal et interface d'entraînement, débit mesuré |
+| `cmapss/model.py`, `cmapss/train.py`, `scripts/train.py` | Réseau ; perte, boucle d'entraînement, arrêt précoce, journal ; étapes A, B, C |
+| `viz/entrainement/`, `viz/lib/record.js` | Tableau de bord d'entraînement en direct (`live.html`) et vidéo grand public (`index.html`) |
+| `tests/` | Tests `pytest` (64) |
 | `docs/plan.md` | Plan du projet et décisions en suspens |
 | `docs/journal.md` | Journal chronologique des actions réalisées |
 
@@ -96,8 +99,8 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 - Normalisation par condition de vol faite et testée, avec sa visualisation filmable (`docs/normalisation.md`).
 - Fenêtres glissantes faites et testées, avec leur vidéo (`docs/fenetres.md`).
 - Chargeur par pli, métriques et baseline faits, avec leurs deux vidéos (`docs/baseline.md`) : score à battre RMSE 21,67 sur le test, plafond de RUL 150.
-- Pas encore de réseau de neurones.
-- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`). Fait pour la normalisation, les fenêtres, les métriques et la baseline ; à faire pour l'entraînement.
+- Réseau, perte, protocole et interface d'entraînement écrits et testés (`docs/reseau.md`). **Pas encore entraîné** : l'entraînement ne se lance qu'avec l'accord de l'utilisateur.
+- Exigence : normalisation et entraînement doivent être visuels et filmables (voir `docs/plan.md`). Fait pour la normalisation, les fenêtres, les métriques, la baseline et l'entraînement (interface prête, à vérifier sur un journal complet).
 - Environnement Python configuré (`.venv`, voir `requirements.txt` et `docs/plan.md`).
 
 ## Commandes utiles
@@ -112,6 +115,8 @@ Le modèle ne reçoit **pas** l'identifiant du jeu en entrée : il doit s'adapte
 .\.venv\Scripts\python.exe scripts\record_viz.py --page fenetres/index.html   # vidéo des fenêtres
 .\.venv\Scripts\python.exe scripts\baseline.py --all                 # validation croisée (plusieurs minutes), test, journaux
 .\.venv\Scripts\python.exe scripts\record_viz.py --page metriques/index.html   # vidéo des métriques (puis baseline/index.html)
+.\.venv\Scripts\python.exe scripts\serve_viz.py --path entrainement/live.html   # tableau de bord d'entraînement en direct
+# Entraînement (à ne lancer qu'avec l'accord de l'utilisateur) : scripts\train.py --smoke | --lambda-grid | --cv | --final (voir docs/reseau.md)
 ```
 
 ## Installation

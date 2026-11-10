@@ -1,4 +1,4 @@
-"""Produit la vidéo de la normalisation en rejouant le journal, image par image (reproductible).
+"""Produit la vidéo d'une page (normalisation par défaut) en rejouant son journal, image par image (reproductible).
 
 Usage : .\\.venv\\Scripts\\python.exe scripts\\record_viz.py [--fps 30] [--out reports\\videos\\normalisation.mp4]
 
@@ -40,8 +40,9 @@ def main():
 
     if not shutil.which("ffmpeg"):
         sys.exit("ffmpeg introuvable dans le PATH.")
-    if not (VIZ / "normalisation" / "journal.jsonl").exists():
-        sys.exit("viz/normalisation/journal.jsonl absent : lancer scripts/normalise.py --journal")
+    journal = VIZ / (Path(args.page).parent.name or "normalisation") / "journal.jsonl"
+    if not journal.exists():
+        sys.exit(f"{journal.relative_to(ROOT)} absent : lancer le script qui écrit ce journal (voir le README)")
     page_dir = Path(args.page).parent.name or "video"   # normalisation, fenetres...
     name = f"{page_dir}_{'simple' if args.mode == 'simple' else 'technique'}.mp4"
     out = Path(args.out) if args.out else ROOT / "reports" / "videos" / name
